@@ -42,6 +42,13 @@ const CATEGORIES = {
     'https://source.unsplash.com/featured/1600x900?golf',
     'https://source.unsplash.com/featured/1600x900?baseball',
   ],
+  animated_characters: [
+    'src/imgs/Animated Characters/aang.jpg',
+    'src/imgs/Animated Characters/batman.jpg',
+    'src/imgs/Animated Characters/bugs_bunny.jpg',
+    'src/imgs/Animated Characters/buzzlight_year.jpg',
+    'src/imgs/Animated Characters/charlie_brown.jpg',
+  ],
 } as const;
 
 const FloorBattle: React.FC = () => {
@@ -51,7 +58,9 @@ const FloorBattle: React.FC = () => {
   const [timers, setTimers] = useState<TimerState['timers']>([INITIAL_TIME, INITIAL_TIME]);
   const [scores, setScores] = useState<TimerState['scores']>([0, 0]);
   const [activePlayer, setActivePlayer] = useState<TimerState['activePlayer']>(null);
+  const [isSkipCooldown, setIsSkipCooldown] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const skipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const currentImage = queue[currentIdx];
 
@@ -82,33 +91,62 @@ const FloorBattle: React.FC = () => {
   };
 
   const handleCorrect = () => {
-    if (activePlayer === null) return;
+    if (activePlayer === null || isSkipCooldown) return;
     setScores(prev => {
       const next = [...prev] as typeof prev;
       next[activePlayer] += 1;
       return next;
     });
-    setCurrentIdx(prev => (prev + 1) % queue.length);
-    stopInterval();
-    const opp: 0 | 1 = activePlayer === 0 ? 1 : 0;
-    if (timers[opp] > 0) startIntervalFor(opp);
-    else if (timers[activePlayer] > 0) startIntervalFor(activePlayer);
-    else setActivePlayer(null);
+    nextImage();
   };
 
-  useEffect(() => () => stopInterval(), []);
+  const handleSkip = () => {
+    if (isSkipCooldown || activePlayer === null) return;
+    
+    setIsSkipCooldown(true);
+    // Don't stop the interval - let the timer keep counting down
+    
+    // Show the current image for 3 seconds
+    skipTimeoutRef.current = setTimeout(() => {
+      // Move to the next image
+      setCurrentIdx(prev => (prev + 1) % queue.length);
+      setIsSkipCooldown(false);
+      
+      // The timer is still running, so no need to restart it
+      // The active player remains the same
+    }, 3000);
+  };
+
+  const nextImage = () => {
+    setCurrentIdx(prev => (prev + 1) % queue.length);
+    stopInterval();
+    
+    if (activePlayer !== null) {
+      const opp: 0 | 1 = activePlayer === 0 ? 1 : 0;
+      if (timers[opp] > 0) startIntervalFor(opp);
+      else if (timers[activePlayer] > 0) startIntervalFor(activePlayer);
+      else setActivePlayer(null);
+    }
+  };
+
+  // Clean up intervals and timeouts on unmount
+  useEffect(() => {
+    return () => {
+      stopInterval();
+      if (skipTimeoutRef.current) clearTimeout(skipTimeoutRef.current);
+    };
+  }, []);
 
   // ===== Render =====
   return (
-    <div className="min-h-screen w-full flex flex-col bg-gray-900 text-white overflow-x-hidden">
-      {/* Header / Controls */}
-      <header className="flex-none p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="h-screen w-full flex flex-col bg-gray-900 text-white overflow-hidden">
+      <header className="flex-none p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
         <h1 className="text-2xl font-bold">The Floor — Picture Battle</h1>
         <div className="flex gap-4 items-center flex-wrap">
           <label htmlFor="category" className="font-semibold">Category:</label>
           <select
             id="category"
-            className="text-black p-2 rounded-lg"
+            className="text-white bg-gray-700 p-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             value={category}
             onChange={e => setCategory(e.target.value as CategoryKey)}
             disabled={activePlayer !== null}
@@ -125,35 +163,72 @@ const FloorBattle: React.FC = () => {
             Start Game
           </button>
         </div>
-        {/* Timers */}
-        <div className="flex gap-8 self-start md:self-auto">
-          {[0, 1].map(p => (
-            <div key={p} className="flex flex-col items-center gap-1">
-              <div className={`w-20 h-20 rounded-full flex items-center justify-center text-xl font-bold transition-colors ${activePlayer === p ? 'bg-green-600' : 'bg-gray-700'}`}>{timers[p]}s</div>
-              <span className="text-sm">P{p + 1} • {scores[p]}</span>
-            </div>
-          ))}
-        </div>
       </header>
 
-      {/* Image + Correct button */}
-      {activePlayer !== null && (
-        <main className="flex-grow flex flex-col items-center justify-center gap-4 p-2">
-          <div className="flex-grow flex items-center justify-center w-full">
-            <img
-              src={currentImage}
-              alt="Guess the picture"
-              className="max-h-full max-w-full object-contain select-none"
-            />
+      {/* Main content with timers and image */}
+      <main className="flex-grow flex flex-col items-center justify-start p-2 overflow-hidden">
+        <div className="timer-container">
+          {/* Player 1 Timer (Left) */}
+          <div className="timer">
+            <div className={`timer-display ${activePlayer === 0 ? 'bg-green-600' : 'bg-gray-700'}`}>
+              {timers[0]}s
+            </div>
+            <span className="text-sm">P1 • {scores[0]}</span>
           </div>
-          <button
-            onClick={handleCorrect}
-            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl text-xl font-semibold mb-4"
-          >
-            Correct!
-          </button>
-        </main>
-      )}
+
+          {/* Image Container */}
+          <div className="image-container">
+            {activePlayer !== null ? (
+              <img
+                src={currentImage}
+                alt="Guess the picture"
+                className="max-h-[calc(100vh-200px)] max-w-full object-contain select-none"
+                width="500px"
+                height="500px"
+              />
+            ) : (
+              <div className="placeholder-container">
+                <p className="text-xl">Select a category and click Start Game</p>
+                <div className="placeholder-box">
+                  Image will appear here
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Player 2 Timer (Right) */}
+          <div className="timer">
+            <div className={`timer-display ${activePlayer === 1 ? 'bg-green-600' : 'bg-gray-700'}`}>
+              {timers[1]}s
+            </div>
+            <span className="text-sm">P2 • {scores[1]}</span>
+          </div>
+        </div>
+
+        {/* Action Buttons - Only show when game is active */}
+        {activePlayer !== null && (
+          <div className="flex gap-4 mt-4">
+            <button
+              onClick={handleCorrect}
+              disabled={isSkipCooldown}
+              className={`bg-green-600 text-white px-6 py-3 rounded-xl text-xl font-semibold ${
+                isSkipCooldown ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-700'
+              }`}
+            >
+              Correct!
+            </button>
+            <button
+              onClick={handleSkip}
+              disabled={isSkipCooldown}
+              className={`bg-red-600 text-white px-6 py-3 rounded-xl text-xl font-semibold ${
+                isSkipCooldown ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-700'
+              }`}
+            >
+              Skip
+            </button>
+          </div>
+        )}
+      </main>
     </div>
   );
 };
