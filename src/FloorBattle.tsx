@@ -129,13 +129,22 @@ const FloorBattle: React.FC = () => {
         </div>
         
         {/* Timers */}
-        <div className="flex gap-8 self-center md:self-auto">
-          {[0, 1].map(p => (
-            <div key={p} className="flex flex-col items-center gap-1">
-              <div className={`w-20 h-20 rounded-full flex items-center justify-center text-xl font-bold transition-colors ${activePlayer === p ? 'bg-green-600' : 'bg-gray-700'}`}>{timers[p]}s</div>
-              <span className="text-sm">P{p + 1} • {scores[p]}</span>
-            </div>
-          ))}
+        <div className="w-full flex justify-between self-center md:self-auto px-4 md:px-8">
+          {/* Player 1 - Left side */}
+          <div className="flex flex-col items-center gap-1">
+            <div className={`w-20 h-20 rounded-full flex items-center justify-center text-xl font-bold transition-colors ${
+              activePlayer === 0 ? 'bg-green-600' : 'bg-gray-700'
+            }`}>{timers[0]}s</div>
+            <span className="text-sm">P1 • {scores[0]}</span>
+          </div>
+          
+          {/* Player 2 - Right side */}
+          <div className="flex flex-col items-center gap-1">
+            <div className={`w-20 h-20 rounded-full flex items-center justify-center text-xl font-bold transition-colors ${
+              activePlayer === 1 ? 'bg-green-600' : 'bg-gray-700'
+            }`}>{timers[1]}s</div>
+            <span className="text-sm">P2 • {scores[1]}</span>
+          </div>
         </div>
       </header>
 
