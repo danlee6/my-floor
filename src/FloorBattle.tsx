@@ -104,7 +104,9 @@ const FloorBattle: React.FC = () => {
       {/* Header / Controls */}
       <header className="flex-none p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <h1 className="text-2xl font-bold">The Floor — Picture Battle</h1>
-        <div className="flex gap-4 items-center flex-wrap">
+        
+        {/* Category section - centered */}
+        <div className="flex gap-4 items-center justify-center md:justify-start flex-wrap">
           <label htmlFor="category" className="font-semibold">Category:</label>
           <select
             id="category"
@@ -125,8 +127,9 @@ const FloorBattle: React.FC = () => {
             Start Game
           </button>
         </div>
+        
         {/* Timers */}
-        <div className="flex gap-8 self-start md:self-auto">
+        <div className="flex gap-8 self-center md:self-auto">
           {[0, 1].map(p => (
             <div key={p} className="flex flex-col items-center gap-1">
               <div className={`w-20 h-20 rounded-full flex items-center justify-center text-xl font-bold transition-colors ${activePlayer === p ? 'bg-green-600' : 'bg-gray-700'}`}>{timers[p]}s</div>
@@ -138,20 +141,25 @@ const FloorBattle: React.FC = () => {
 
       {/* Image + Correct button */}
       {activePlayer !== null && (
-        <main className="flex-grow flex flex-col items-center justify-center gap-4 p-2">
-          <div className="flex-grow flex items-center justify-center w-full">
+        <main className="flex-grow flex flex-col items-center p-2 overflow-hidden relative">
+          {/* Image container with constrained height */}
+          <div className="w-full h-[calc(100vh-300px)] flex items-center justify-center overflow-hidden">
             <img
               src={currentImage}
               alt="Guess the picture"
               className="max-h-full max-w-full object-contain select-none"
             />
           </div>
-          <button
-            onClick={handleCorrect}
-            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl text-xl font-semibold mb-4"
-          >
-            Correct!
-          </button>
+          
+          {/* Button fixed to bottom */}
+          <div className="w-full flex justify-center pb-4 mt-2 sticky bottom-0">
+            <button
+              onClick={handleCorrect}
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl text-xl font-semibold"
+            >
+              Correct!
+            </button>
+          </div>
         </main>
       )}
     </div>
