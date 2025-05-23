@@ -107,6 +107,19 @@ const FloorBattle: React.FC = () => {
     };
   }, []);
 
+  // Add this effect to check for game end when timers change
+  useEffect(() => {
+    // Check if either player's timer has reached zero
+    if (activePlayer !== null && (timers[0] === 0 || timers[1] === 0)) {
+      // If any player has run out of time, end the round
+      stopInterval();
+      setActivePlayer(null); // This will re-enable the dropdown and Start Game button
+      
+      // Optional: show some indication that the game is over
+      console.log('Game over! Player timers:', timers);
+    }
+  }, [timers]); // Only re-run this effect when timers change
+
   // ===== Render =====
   return (
     <div className="h-screen w-full flex flex-col bg-gray-900 text-white overflow-hidden">
