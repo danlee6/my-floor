@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CATEGORIES } from './CATEGORIES';
+import startMusic from './music/serious-dramatic-intense-music-338204.mod.wav'; 
+import endMusic from './music/end.wav';
 
 /***************************************
  * Floor Picture‑Battle (TypeScript)
@@ -32,6 +34,9 @@ const FloorBattle: React.FC = () => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const skipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const startAudioRef = useRef<HTMLAudioElement | null>(null);
+  const endAudioRef = useRef<HTMLAudioElement | null>(null);
+
   const currentImage = queue[currentIdx];
 
   // ===== Timer helpers =====
@@ -58,6 +63,12 @@ const FloorBattle: React.FC = () => {
     setTimers([INITIAL_TIME, INITIAL_TIME]);
     setScores([0, 0]);
     startIntervalFor(0);
+
+    // Play start music
+    if (startAudioRef.current) {
+      startAudioRef.current.currentTime = 0; // Start from beginning
+      startAudioRef.current.play().catch(e => console.log("Audio play failed:", e));
+    }
   };
 
   const handleCorrect = () => {
@@ -115,10 +126,37 @@ const FloorBattle: React.FC = () => {
       stopInterval();
       setActivePlayer(null); // This will re-enable the dropdown and Start Game button
       
+      // Stop game music and play end sound
+      if (startAudioRef.current) {
+        startAudioRef.current.pause();
+        startAudioRef.current.currentTime = 0;
+      }
+      
+      if (endAudioRef.current) {
+        endAudioRef.current.currentTime = 0;
+        endAudioRef.current.play().catch(e => console.log("End audio play failed:", e));
+      }
+      
       // Optional: show some indication that the game is over
       console.log('Game over! Player timers:', timers);
     }
   }, [timers]); // Only re-run this effect when timers change
+
+  // Initialize audio elements on component mount
+  useEffect(() => {
+    startAudioRef.current = new Audio(startMusic);
+    startAudioRef.current.loop = true; // Loop the music during gameplay
+    startAudioRef.current.volume = 0.5; // Set volume to 50%
+    
+    endAudioRef.current = new Audio(endMusic);
+    endAudioRef.current.volume = 0.7; // Set volume to 70%
+    
+    // Cleanup function
+    return () => {
+      if (startAudioRef.current) startAudioRef.current.pause();
+      if (endAudioRef.current) endAudioRef.current.pause();
+    };
+  }, []);
 
   // ===== Render =====
   return (
