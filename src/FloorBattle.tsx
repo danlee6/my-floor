@@ -21,6 +21,43 @@ interface TimerState {
 const INITIAL_TIME = 45;
 
 const CATEGORIES = {
+  Iconic_World_Landmarks: [
+    'src/imgs/Iconic_World_Landmarks/01_Statue_of_Liberty.avif',
+    'src/imgs/Iconic_World_Landmarks/02_Eiffel_Tower.jpg',
+    'src/imgs/Iconic_World_Landmarks/03_Taj_Mahal.avif',
+    'src/imgs/Iconic_World_Landmarks/04_Colosseum-Rome-Italy.webp',
+    'src/imgs/Iconic_World_Landmarks/05_White-House-Washington-DC.webp',
+    'src/imgs/Iconic_World_Landmarks/06_Sydney-Opera-House-Port-Jackson.webp',
+    'src/imgs/Iconic_World_Landmarks/07_Big_Ben.jpg',
+    'src/imgs/Iconic_World_Landmarks/08_Leaning-Tower-of-Pisa-Italy.webp',
+    'src/imgs/Iconic_World_Landmarks/09_Pyramids_at_Giza.jpg',
+    'src/imgs/Iconic_World_Landmarks/10_Stonehenge.jpg',
+    'src/imgs/Iconic_World_Landmarks/11_Mount_Rushmore.png',
+    'src/imgs/Iconic_World_Landmarks/12_Golden_Gate_Bridge.jpg',
+    'src/imgs/Iconic_World_Landmarks/13_Machu_Picchu.jpg',
+    'src/imgs/Iconic_World_Landmarks/14_Empire_State_Building.jpg',
+    'src/imgs/Iconic_World_Landmarks/15_Trevi_Fountain.avif',
+    'src/imgs/Iconic_World_Landmarks/16_Grand_Canyon.jpg',
+    'src/imgs/Iconic_World_Landmarks/17_Christ_the_Redeemer.jpg',
+    'src/imgs/Iconic_World_Landmarks/18_Uluru_or_Ayers_Rock .jpg',
+    'src/imgs/Iconic_World_Landmarks/19_Moai_Statues_Easter_Island.jpg',
+    'src/imgs/Iconic_World_Landmarks/20_Victoria_Falls.webp',
+    'src/imgs/Iconic_World_Landmarks/21_St_Peters_Basilica.avif',
+    'src/imgs/Iconic_World_Landmarks/22_Sagrada_Familia.jpg',
+    'src/imgs/Iconic_World_Landmarks/23_Great_Wall_of_China.jpg',
+    'src/imgs/Iconic_World_Landmarks/24_Arc_de_Triomphe.webp',
+    'src/imgs/Iconic_World_Landmarks/25_Little_Mermaid_Denmark.webp',
+    'src/imgs/Iconic_World_Landmarks/26_The_Forbidden_City.webp',
+    'src/imgs/Iconic_World_Landmarks/27_Louvre_Museum.webp',
+    'src/imgs/Iconic_World_Landmarks/28_Mt_Fuji_Japan.webp',
+    'src/imgs/Iconic_World_Landmarks/29_Petra_Jordan.jpg',
+    'src/imgs/Iconic_World_Landmarks/30_Terracotta_Warriors.jpg',
+    'src/imgs/Iconic_World_Landmarks/31_Wailing_Wall.jpg',
+    'src/imgs/Iconic_World_Landmarks/32_Mecca.jpg',
+    'src/imgs/Iconic_World_Landmarks/33_Taipei_101.webp',
+    'src/imgs/Iconic_World_Landmarks/34_Burj_Khalifa.webp',
+    'src/imgs/Iconic_World_Landmarks/35_Parthenon-Athens.webp',
+  ],
   animals: [
     'https://source.unsplash.com/featured/1600x900?lion',
     'https://source.unsplash.com/featured/1600x900?tiger',
@@ -213,8 +250,8 @@ const FloorBattle: React.FC = () => {
                 src={currentImage}
                 alt="Guess the picture"
                 className="max-h-[calc(100vh-200px)] max-w-full object-contain select-none"
-                width="500px"
-                height="500px"
+                width="800px"
+                height="800px"
               />
             ) : (
               <div className="placeholder-container">
