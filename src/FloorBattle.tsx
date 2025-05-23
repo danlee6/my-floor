@@ -147,15 +147,28 @@ const FloorBattle: React.FC = () => {
           </div>
 
           {/* Image Container */}
-          <div className="image-container">
+          <div className="image-container relative">
             {activePlayer !== null ? (
-              <img
-                src={currentImage}
-                alt="Guess the picture"
-                className="max-h-[calc(100vh-200px)] max-w-full object-contain select-none"
-                width="800px"
-                height="800px"
-              />
+              <>
+                <img
+                  src={currentImage}
+                  alt="Guess the picture"
+                  className={`max-h-[calc(100vh-200px)] max-w-full object-contain select-none ${
+                    isSkipCooldown ? 'opacity-80' : ''
+                  }`}
+                  width="800px"
+                  height="800px"
+                />
+                {/* Red overlay during skip cooldown */}
+                {isSkipCooldown && (
+                  <div 
+                    className="absolute inset-0 flex items-center justify-center"
+                    style={{ backgroundColor: 'rgba(220, 38, 38, 0.4)' }} // Explicit RGBA for translucency
+                  >
+                    <span className="text-2xl font-bold text-white">SKIPPING...</span>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="placeholder-container">
                 <p className="text-xl">Select a category and click Start Game</p>
