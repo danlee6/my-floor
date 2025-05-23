@@ -61,12 +61,12 @@ button {
   align-items: center;
   gap: 1rem;
   width: 100%;
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 0 1rem;
   box-sizing: border-box;
   height: calc(100vh - 120px);
-  max-height: 700px;
+  max-height: 900px;
 }
 
 .timer {
