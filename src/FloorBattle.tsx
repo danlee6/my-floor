@@ -31,6 +31,7 @@ const FloorBattle: React.FC = () => {
   const [scores, setScores] = useState<TimerState['scores']>([0, 0]);
   const [activePlayer, setActivePlayer] = useState<TimerState['activePlayer']>(null);
   const [isSkipCooldown, setIsSkipCooldown] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const skipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -41,6 +42,8 @@ const FloorBattle: React.FC = () => {
 
   // ===== Timer helpers =====
   const startIntervalFor = (player: 0 | 1) => {
+    if (isPaused) return; // Don't start interval if paused
+
     if (intervalRef.current) clearInterval(intervalRef.current);
     setActivePlayer(player);
     intervalRef.current = setInterval(() => {
@@ -147,6 +150,41 @@ const FloorBattle: React.FC = () => {
       if (timers[opp] > 0) startIntervalFor(opp);
       else if (timers[activePlayer] > 0) startIntervalFor(activePlayer);
       else setActivePlayer(null);
+    }
+  };
+
+  const togglePause = () => {
+    if (activePlayer === null) return; // Only allow pause during active game
+    
+    if (isPaused) {
+      // Resume game
+      setIsPaused(false); // State won't update until after this function completes
+      
+      // Resume music
+      if (startAudioRef.current) {
+        startAudioRef.current.play().catch(e => console.log("Resume audio failed:", e));
+      }
+      
+      // Directly create the interval here instead of using startIntervalFor
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      intervalRef.current = setInterval(() => {
+        setTimers(prev => {
+          if (prev[activePlayer] === 0) return prev;
+          const next = [...prev] as typeof prev;
+          next[activePlayer] = prev[activePlayer] - 1;
+          return next;
+        });
+      }, 1000);
+    } else {
+      // Pause game
+      stopInterval(); // Stop the timer
+    
+      // Pause music
+      if (startAudioRef.current) {
+        startAudioRef.current.pause();
+      }
+      
+      setIsPaused(true);
     }
   };
 
@@ -299,6 +337,14 @@ const FloorBattle: React.FC = () => {
               }`}
             >
               Skip
+            </button>
+            <button
+              onClick={togglePause}
+              className={`bg-yellow-600 text-white px-6 py-3 rounded-xl text-xl font-semibold ${
+                isPaused ? 'hover:bg-yellow-700' : 'hover:bg-yellow-500'
+              }`}
+            >
+              {isPaused ? 'Resume' : 'Pause'}
             </button>
           </div>
         )}
