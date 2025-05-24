@@ -317,34 +317,48 @@ const FloorBattle: React.FC = () => {
           </div>
         </div>
 
-        {/* Action Buttons - Only show when game is active */}
+        {/* Action Buttons */}
         {activePlayer !== null && (
           <div className="flex gap-4 mt-4">
             <button
               onClick={handleCorrect}
-              disabled={isSkipCooldown}
+              disabled={isSkipCooldown || isPaused}
               className={`bg-green-600 text-white px-6 py-3 rounded-xl text-xl font-semibold ${
-                isSkipCooldown ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-700'
+                isSkipCooldown || isPaused ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-700'
               }`}
             >
               Correct!
             </button>
             <button
               onClick={handleSkip}
-              disabled={isSkipCooldown}
+              disabled={isSkipCooldown || isPaused}
               className={`bg-red-600 text-white px-6 py-3 rounded-xl text-xl font-semibold ${
-                isSkipCooldown ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-700'
+                isSkipCooldown || isPaused ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-700'
               }`}
             >
               Skip
             </button>
             <button
               onClick={togglePause}
-              className={`bg-yellow-600 text-white px-6 py-3 rounded-xl text-xl font-semibold ${
-                isPaused ? 'hover:bg-yellow-700' : 'hover:bg-yellow-500'
+              className={`bg-gray-700 text-white px-6 py-3 rounded-xl text-xl font-semibold flex items-center gap-2 ${
+                isPaused ? 'hover:bg-gray-600' : 'hover:bg-gray-600'
               }`}
             >
-              {isPaused ? 'Resume' : 'Pause'}
+              {isPaused ? (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                  Resume
+                </>
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18V6a1 1 0 00-1-1H7a1 1 0 00-1 1v12a1 1 0 001 1h2a1 1 0 001-1zM17 18V6a1 1 0 00-1-1h-2a1 1 0 00-1 1v12a1 1 0 001 1h2a1 1 0 001-1z" clipRule="evenodd" />
+                  </svg>
+                  Pause
+                </>
+              )}
             </button>
           </div>
         )}
