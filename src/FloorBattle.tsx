@@ -85,21 +85,61 @@ const FloorBattle: React.FC = () => {
     if (isSkipCooldown || activePlayer === null) return;
     
     setIsSkipCooldown(true);
-    // Don't stop the interval - let the timer keep counting down
     
     // Show the current image for 3 seconds
     skipTimeoutRef.current = setTimeout(() => {
-      // Move to the next image
-      setCurrentIdx(prev => (prev + 1) % queue.length);
-      setIsSkipCooldown(false);
+      // Check if we've reached the end of the queue
+      if (currentIdx >= queue.length - 1) {
+        // End the game
+        stopInterval();
+        setActivePlayer(null);
+        setIsSkipCooldown(false);
+        
+        // Stop game music and play end sound
+        if (startAudioRef.current) {
+          startAudioRef.current.pause();
+          startAudioRef.current.currentTime = 0;
+        }
+        
+        if (endAudioRef.current) {
+          endAudioRef.current.currentTime = 0;
+          endAudioRef.current.play().catch(e => console.log("End audio play failed:", e));
+        }
+        
+        console.log('Game over! All images have been shown.');
+        return;
+      }
       
-      // The timer is still running, so no need to restart it
-      // The active player remains the same
+      // Otherwise, move to the next image
+      setCurrentIdx(prev => prev + 1);
+      setIsSkipCooldown(false);
     }, 3000);
   };
 
   const nextImage = () => {
-    setCurrentIdx(prev => (prev + 1) % queue.length);
+    // Check if we've reached the end of the queue
+    if (currentIdx >= queue.length - 1) {
+      // End the game
+      stopInterval();
+      setActivePlayer(null);
+      
+      // Stop game music and play end sound
+      if (startAudioRef.current) {
+        startAudioRef.current.pause();
+        startAudioRef.current.currentTime = 0;
+      }
+      
+      if (endAudioRef.current) {
+        endAudioRef.current.currentTime = 0;
+        endAudioRef.current.play().catch(e => console.log("End audio play failed:", e));
+      }
+      
+      console.log('Game over! All images have been shown.');
+      return;
+    }
+    
+    // Otherwise, move to the next image
+    setCurrentIdx(prev => prev + 1);
     stopInterval();
     
     if (activePlayer !== null) {
